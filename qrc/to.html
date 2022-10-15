@@ -1,0 +1,59 @@
+<html>
+    <title> Copy To </title>
+    <head>
+        <!-- include the library -->
+        <!-- https://github.com/mebjas/html5-qrcode -->        
+        <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+    </head>
+    
+    <body>
+        <div id="qr-reader" style="width:500px"></div>
+        <!-- <a download="welcome.txt" href='#' id="link">Download</a> -->
+        <div id="qr-reader-results"></div>
+
+        <script>            
+            
+             const saveDataUrl = (fileName, dataUrl) => {
+
+                var arr = dataUrl.split(',');
+                var mime = arr[0].match(/:(.*?);/)[1];                
+                var bstr = atob(arr[1]);
+                var n = bstr.length;
+                var u8arr = new Uint8Array(n); //Uint8 array
+                while(n--){
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+
+                const blob = new Blob([u8arr], {type:mime});
+
+                const link = document.createElement("a");
+                link.href = window.URL.createObjectURL(blob);
+                link.download = fileName;
+                link.click();
+            };
+            
+
+            var resultContainer = document.getElementById('qr-reader-results');
+            var lastResult, countResults = 0;
+
+            function onScanSuccess(decodedText, decodedResult) {
+                if (decodedText !== lastResult) {
+                    ++countResults;
+                    lastResult = decodedText;
+                    // Handle on success condition with the decoded message.
+                    console.log(`Scan result ${decodedText}`, decodedResult);
+                    saveDataUrl("test.txt", lastResult);                             
+                }
+            }
+
+            var html5QrcodeScanner = new Html5QrcodeScanner(
+                "qr-reader", { fps: 10, qrbox: 250 });
+            html5QrcodeScanner.render(onScanSuccess); 
+        
+
+        </script>
+
+        <br> <br>
+        Hey there!
+    </body>
+</html>

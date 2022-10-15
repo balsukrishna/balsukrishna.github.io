@@ -1,0 +1,64 @@
+<html>
+    <title>Copy From</title>
+    <head>
+        <!-- include the library -->
+        <!-- https://github.com/davidshimjs/qrcodejs -->        
+        <script src="./lib/qrcode.js"></script>
+    </head>
+     
+    <body>                
+        <!-- Select file -->
+        <input type="file" id="file-selector">
+        <div id="qrcode" style="width:500px; height:500px; margin-top:15px;"></div>
+
+        
+        <script type="text/javascript">
+            var qrcode = new QRCode(
+                document.getElementById("qrcode"),
+                {
+                    width : 500,
+                    height : 500
+                }
+            );
+
+            // Get file selector and add event listener
+            const fileSelector = document.getElementById('file-selector');
+            
+            fileSelector.addEventListener('change', (event) => {
+
+                //Get First file
+                const fileList = event.target.files;
+                console.log("File Selector is triggered");
+                console.log(fileList[0]);
+                const file = fileList[0];
+
+                //Initialize File reader and attach event listeners
+                const reader = new FileReader();            
+
+                reader.addEventListener('load', (event) => {
+
+                    console.log("File read complete... Here it is...");
+                    console.log(event.target.result);
+
+                    qrcode.clear(); // clear the code.
+                    qrcode.makeCode( event.target.result ); 
+                });
+
+                reader.addEventListener('progress', (event) => {
+                    if (event.loaded && event.total) {
+                        const percent = (event.loaded / event.total) * 100;
+                        console.log(`File read Progress: ${Math.round(percent)}`);
+                    }
+                });
+        
+                //Finally Read file    
+                reader.readAsDataURL(file);
+
+            });
+    
+        </script>
+        <br><br><br>
+        Hello world!
+    </body>
+
+</html>
